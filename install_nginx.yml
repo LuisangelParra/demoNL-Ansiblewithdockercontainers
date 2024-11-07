@@ -1,0 +1,12 @@
+- name: Instala Nginx en servidores demo
+  hosts: demo_servers
+  become: yes
+  tasks:
+    - name: Actualiza apt
+      apt:
+        update_cache: yes
+
+    - name: Instala Nginx
+      apt:
+        name: nginx
+        state: present
