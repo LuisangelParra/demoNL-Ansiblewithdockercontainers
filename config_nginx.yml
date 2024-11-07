@@ -1,0 +1,34 @@
+---
+- name: Configura Nginx y reinicia el servicio
+  hosts: demo_servers
+  become: yes
+  tasks:
+    - name: Crea el archivo de configuración de Nginx
+      copy:
+        dest: /etc/nginx/sites-available/custom_config
+        content: |
+          server {
+              listen 80;
+              server_name localhost;
+
+              location / {
+                  root /var/www/html;
+                  index index.html index.htm;
+              }
+          }
+      notify:
+        - Reiniciar Nginx
+
+    - name: Hacer un enlace simbólico a sites-enabled
+      file:
+        src: /etc/nginx/sites-available/custom_config
+        dest: /etc/nginx/sites-enabled/custom_config
+        state: link
+      notify:
+        - Reiniciar Nginx
+
+  handlers:
+    - name: Reiniciar Nginx
+      service:
+        name: nginx
+        state: restarted
